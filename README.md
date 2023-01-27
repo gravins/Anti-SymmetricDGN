@@ -1,5 +1,8 @@
 # Anti-Symmetric DGN
-This repository provides the official reference implementation of our papers **Anti-Symmetric DGN: a stable architecture for Deep Graph Networks** accepted at ICLR 2023 and **Non-Dissipative Propagation by Anti-Symmetric Deep Graph Networks** accepted at the DLG-AAAI’23 workshop.
+This repository provides the official reference implementation of our papers 
+
+-**Anti-Symmetric DGN: a stable architecture for Deep Graph Networks** accepted at ICLR 2023
+- **Non-Dissipative Propagation by Anti-Symmetric Deep Graph Networks** accepted at the DLG-AAAI’23 workshop.
 
 Please consider citing us
 
