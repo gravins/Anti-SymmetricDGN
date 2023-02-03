@@ -7,13 +7,12 @@ This repository provides the official reference implementation of our papers
 Please consider citing us
 
 	@inproceedings{gravina2023adgn,
-		author = {Gravina, Alessio, and Bacciu, Davide, and Gallicchio, Claudio},
+		author = {Alessio Gravina and Davide Bacciu and Claudio Gallicchio},
 	 	title = {Anti-Symmetric {DGN}: a stable architecture for Deep Graph Networks},
-	 	booktitle = {International Conference on Learning Representations},
+	 	booktitle = {The Eleventh International Conference on Learning Representations },
 	 	year = {2023},
 		url = {https://openreview.net/forum?id=J3Y7cgZOOS}
 	}
-
 
 ## Requirements
 _Note: we assume Miniconda/Anaconda is installed, otherwise see this [link](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html) for correct installation. The proper Python version is installed during the first step of the following procedure._
