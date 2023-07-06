@@ -8,7 +8,7 @@ Please consider citing us
 
 	@inproceedings{gravina2023adgn,
 		author = {Alessio Gravina and Davide Bacciu and Claudio Gallicchio},
-	 	title = {Anti-Symmetric {DGN}: a stable architecture for Deep Graph Networks},
+	 	title = {{Anti-Symmetric DGN: a stable architecture for Deep Graph Networks}},
 	 	booktitle = {The Eleventh International Conference on Learning Representations },
 	 	year = {2023},
 		url = {https://openreview.net/forum?id=J3Y7cgZOOS}
