@@ -16,6 +16,14 @@ Please consider citing us
 		url = {https://openreview.net/forum?id=J3Y7cgZOOS}
 	}
 
+ 	@inproceedings{gravina2023randomized,
+		author = {Alessio Gravina and Claudio Gallicchio and Davide Bacciu},
+	 	title = {{Non-Dissipative Propagation by Randomized Anti-Symmetric Deep Graph Networks}},
+	 	booktitle = {},
+	 	year = {2023},
+		url = {}
+	}
+
 ## Requirements
 _Note: we assume Miniconda/Anaconda is installed, otherwise see this [link](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html) for correct installation. The proper Python version is installed during the first step of the following procedure._
 
