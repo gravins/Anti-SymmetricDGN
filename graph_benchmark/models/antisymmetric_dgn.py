@@ -16,16 +16,23 @@ class AntiSymmetricConv(MessagePassing):
                  epsilon : float = 0.1, 
                  activ_fun: str = 'tanh', # it should be monotonically non-decreasing
                  gcn_conv: bool = False,
-                 bias: bool = True) -> None:
+                 bias: bool = True,
+                 train_weights: bool = True) -> None:
 
         super().__init__(aggr = 'add')
-        self.W = Parameter(torch.empty((in_channels, in_channels)), requires_grad=True)
-        self.bias = Parameter(torch.empty(in_channels), requires_grad=True) if bias else None
+        self.train_weights = train_weights
+        self.W = Parameter(torch.empty((in_channels, in_channels)), requires_grad=self.train_weights)
+        self.bias = Parameter(torch.empty(in_channels), requires_grad=self.train_weights) if bias else None
 
         self.lin = Linear(in_channels, in_channels, bias=False) # for simple aggregation
+        if not self.train_weights:
+            self.lin.weight.requires_grad = False
         self.I = Parameter(torch.eye(in_channels), requires_grad=False)
 
         self.gcn_conv = GCNConv(in_channels, in_channels, bias=False) if gcn_conv else None
+        if not self.train_weights and self.gcn_conv is not None:
+            for param in self.gcn_conv.parameters():
+                param.requires_grad = False
 
         self.num_iters = num_iters
         self.gamma = gamma
@@ -79,7 +86,9 @@ class GraphAntiSymmetricNN(Module):
                  gamma: float = 0.1,
                  activ_fun: str = 'tanh',
                  gcn_norm: bool = False,
-                 bias: bool = True) -> None:
+                 bias: bool = True,
+                 train_weights: bool = True, 
+                 weight_sharing: bool = True) -> None:
         super().__init__()
 
         self.input_dim = input_dim
@@ -90,6 +99,8 @@ class GraphAntiSymmetricNN(Module):
         self.gamma = gamma
         self.activ_fun = activ_fun
         self.bias = bias
+        self.train_weights = train_weights
+        self.weight_sharing = weight_sharing
 
         inp = self.input_dim
         self.emb = None
@@ -97,13 +108,33 @@ class GraphAntiSymmetricNN(Module):
             self.emb = Linear(self.input_dim, self.hidden_dim)
             inp = self.hidden_dim
 
-        self.conv = AntiSymmetricConv(in_channels = inp,
+        self.conv = ModuleList()
+        if weight_sharing:
+            self.conv.append(
+                AntiSymmetricConv(in_channels = inp,
                                   num_iters = self.num_layers,
                                   gamma = self.gamma,
                                   epsilon = self.epsilon,
                                   activ_fun = self.activ_fun,
                                   gcn_conv = gcn_norm,
-                                  bias = self.bias)
+                                  bias = self.bias,
+                                  train_weights=self.train_weights)
+            )
+            if not self.trainable_conv_layer:
+                for param in self.conv[0].parameters():
+                    param.requires_grad = False
+        else:
+            for _ in range(num_layers):
+                self.conv.append(
+                    AntiSymmetricConv(in_channels = inp,
+                                      num_iters = 1,
+                                      gamma = self.gamma,
+                                      epsilon = self.epsilon,
+                                      activ_fun = self.activ_fun,
+                                      gcn_conv = gcn_norm,
+                                      bias = self.bias,
+                                      train_weights = self.train_weights)
+                )
 
         self.readout = Linear(inp, self.output_dim)
 
@@ -111,7 +142,8 @@ class GraphAntiSymmetricNN(Module):
         x, edge_index, edge_weight = data.x, data.edge_index, data.edge_weight
 
         x = self.emb(x) if self.emb else x
-        x = self.conv(x, edge_index, edge_weight)
+        for conv in self.conv:
+            x = conv(x, edge_index, edge_weight)
         x = self.readout(x)
 
         return x

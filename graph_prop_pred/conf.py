@@ -1,7 +1,8 @@
 from models import *
 
 
-def config_antisymmetric_dgn_GraphProp(num_features, num_classes, gcn_norm=False):
+def config_antisymmetric_dgn_GraphProp(num_features, num_classes, gcn_norm=False, 
+                                       train_weights=True, weight_sharing=True):
     for h in [30, 20, 10]:
         for l in [20, 10, 5, 1]:
             for e in [1., 1e-1, 1e-2, 1e-3]:
@@ -15,7 +16,9 @@ def config_antisymmetric_dgn_GraphProp(num_features, num_classes, gcn_norm=False
                                 'epsilon': e,
                                 'gamma': g,
                                 'activ_fun': 'tanh',
-                                'gcn_norm': gcn_norm                                
+                                'gcn_norm': gcn_norm,
+                                'train_weights': train_weights, 
+                                'weight_sharing': weight_sharing
                             },
                             'optim': {
                                 'lr': 0.003,
@@ -91,7 +94,10 @@ c4 = lambda num_features, num_classes: config_antisymmetric_dgn_GraphProp(num_fe
 c5 = lambda num_features, num_classes: config_antisymmetric_dgn_GraphProp(num_features, num_classes)
 c6 = lambda num_features, num_classes: config_ODE_GraphProp(num_features, num_classes)
 c7 = lambda num_features, num_classes: config_gcn2_GraphProp(num_features, num_classes, 'GCN2Conv')
-
+c8 = lambda num_features, num_classes: config_antisymmetric_dgn_GraphProp(num_features, num_classes, gcn_norm=True, train_weights=False)
+c9 = lambda num_features, num_classes: config_antisymmetric_dgn_GraphProp(num_features, num_classes, train_weights=False)
+c10 = lambda num_features, num_classes: config_antisymmetric_dgn_GraphProp(num_features, num_classes, gcn_norm=True, weight_sharing=False)
+c11 = lambda num_features, num_classes: config_antisymmetric_dgn_GraphProp(num_features, num_classes, weight_sharing=False)
 CONFIGS = {
     'GIN_GraphProp': (c0, DGN_GraphProp),
     'GCN_GraphProp': (c1, DGN_GraphProp),
@@ -99,6 +105,10 @@ CONFIGS = {
     'GAT_GraphProp': (c3, DGN_GraphProp),
     'GraphAntiSymmetricNN_weight_sharing_gcnnorm_GraphProp': (c4, GraphAntiSymmetricNN_GraphProp),
     'GraphAntiSymmetricNN_weight_sharing_GraphProp': (c5, GraphAntiSymmetricNN_GraphProp),
+    'GraphAntiSymmetricNN_weight_sharing_gcnnorm_randomized_GraphProp': (c8, GraphAntiSymmetricNN_GraphProp),
+    'GraphAntiSymmetricNN_weight_sharing_randomized_GraphProp': (c9, GraphAntiSymmetricNN_GraphProp),
+    'GraphAntiSymmetricNN_layer_dependent_weights_gcnnorm_GraphProp': (c10, GraphAntiSymmetricNN_GraphProp),
+    'GraphAntiSymmetricNN_layer_dependent_weights_GraphProp': (c11, GraphAntiSymmetricNN_GraphProp),
     'DGC_GraphProp': (c6, DGC_GraphProp),
     'GRAND_GraphProp': (c6, GRAND_GraphProp),
     'GCN2_GraphProp': (c7, DGN_GraphProp)

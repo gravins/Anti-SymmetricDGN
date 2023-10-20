@@ -17,16 +17,23 @@ class AntiSymmetricConv(MessagePassing):
                  epsilon : float = 0.1, 
                  activ_fun: str = 'tanh', # it should be monotonically non-decreasing
                  gcn_conv: bool = False,
-                 bias: bool = True) -> None:
+                 bias: bool = True,
+                 train_weights: bool = True) -> None:
 
         super().__init__(aggr = 'add')
-        self.W = Parameter(torch.empty((in_channels, in_channels)), requires_grad=True)
-        self.bias = Parameter(torch.empty(in_channels), requires_grad=True) if bias else None
+        self.train_weights = train_weights
+        self.W = Parameter(torch.empty((in_channels, in_channels)), requires_grad=self.train_weights)
+        self.bias = Parameter(torch.empty(in_channels), requires_grad=self.train_weights) if bias else None
 
         self.lin = Linear(in_channels, in_channels, bias=False) # for simple aggregation
+        if not self.train_weights:
+            self.lin.weight.requires_grad = False
         self.I = Parameter(torch.eye(in_channels), requires_grad=False)
 
         self.gcn_conv = GCNConv(in_channels, in_channels, bias=False) if gcn_conv else None
+        if not self.train_weights and self.gcn_conv is not None:
+            for param in self.gcn_conv.parameters():
+                param.requires_grad = False
 
         self.num_iters = num_iters
         self.gamma = gamma
@@ -43,7 +50,8 @@ class AntiSymmetricConv(MessagePassing):
                         epsilon: {self.epsilon.data if isinstance(self.epsilon, Parameter) else self.epsilon}, \
                         activ_fun: {self.activation}, \
                         gcn_conv: {self.gcn_conv}, \
-                        bias: {self.bias is not None})'
+                        bias: {self.bias is not None}, \
+                        train_weights: {self.train_weights})'
 
     def forward(self, x: torch.Tensor, edge_index: torch.Tensor, edge_weight: Optional[torch.Tensor] = None) -> torch.Tensor:
         antisymmetric_W = self.W - self.W.T - self.gamma * self.I
@@ -91,7 +99,9 @@ class GraphAntiSymmetricNN_GraphProp(Module):
                  node_level_task: bool = False,
                  activ_fun: str = 'tanh',
                  gcn_norm: bool = False,
-                 bias: bool = True) -> None:
+                 bias: bool = True,
+                 train_weights: bool = True, 
+                 weight_sharing: bool = True) -> None:
         super().__init__()
 
         self.input_dim = input_dim
@@ -102,6 +112,8 @@ class GraphAntiSymmetricNN_GraphProp(Module):
         self.gamma = gamma
         self.activ_fun = activ_fun
         self.bias = bias
+        self.train_weights = train_weights
+        self.weight_sharing = weight_sharing
 
         inp = self.input_dim
         self.emb = None
@@ -109,13 +121,33 @@ class GraphAntiSymmetricNN_GraphProp(Module):
             self.emb = Linear(self.input_dim, self.hidden_dim)
             inp = self.hidden_dim
 
-        self.conv = AntiSymmetricConv(in_channels = inp,
+        self.conv = ModuleList()
+        if weight_sharing:
+            self.conv.append(
+                AntiSymmetricConv(in_channels = inp,
                                   num_iters = self.num_layers,
                                   gamma = self.gamma,
                                   epsilon = self.epsilon,
                                   activ_fun = self.activ_fun,
                                   gcn_conv = gcn_norm,
-                                  bias = self.bias)
+                                  bias = self.bias,
+                                  train_weights=self.train_weights)
+            )
+            if not self.train_weights:
+                for param in self.conv[0].parameters():
+                    param.requires_grad = False
+        else:
+            for _ in range(num_layers):
+                self.conv.append(
+                    AntiSymmetricConv(in_channels = inp,
+                                      num_iters = 1,
+                                      gamma = self.gamma,
+                                      epsilon = self.epsilon,
+                                      activ_fun = self.activ_fun,
+                                      gcn_conv = gcn_norm,
+                                      bias = self.bias,
+                                      train_weights = self.train_weights)
+                )
             
         self.node_level_task = node_level_task 
         if self.node_level_task:
@@ -138,7 +170,8 @@ class GraphAntiSymmetricNN_GraphProp(Module):
         x, edge_index, batch = data.x, data.edge_index, data.batch
 
         x = self.emb(x) if self.emb else x
-        x = self.conv(x, edge_index)
+        for conv in self.conv:
+            x = conv(x, edge_index)
 
         if not self.node_level_task:
             x = torch.cat([global_add_pool(x, batch), global_max_pool(x, batch), global_mean_pool(x, batch)], dim=1)
