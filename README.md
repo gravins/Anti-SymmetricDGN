@@ -3,6 +3,8 @@ This repository provides the official reference implementation of our papers
 
 - **[Anti-Symmetric DGN: a stable architecture for Deep Graph Networks](https://openreview.net/forum?id=J3Y7cgZOOS)** accepted at ICLR 2023
 - **[Non-Dissipative Propagation by Anti-Symmetric Deep Graph Networks](https://drive.google.com/file/d/1uPHhjwSa3g_hRvHwx6UnbMLgGN_cAqMu/view?usp=share_link)** accepted at the DLG-AAAI’23 workshop.
+- **[Non-Dissipative Propagation by Randomized Anti-Symmetric Deep Graph Networks](http://pages.di.unipi.it/gravina/#publications)** accepted at the Deep Learning meets Neuromorphic Hardware Workshop, ECML-PKDD 2023.
+          
 
 Please consider citing us
 
