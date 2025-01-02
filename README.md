@@ -23,9 +23,9 @@ Please consider citing us
 	 	year = {2025},
 	 	editor={Meo, Rosa and Silvestri, Fabrizio},
 	 	publisher={Springer Nature Switzerland},
-	 	address="Cham",
-	 	pages="25--36",
-	 	isbn="978-3-031-74643-7"
+	 	address={Cham},
+	 	pages={25--36},
+	 	isbn={978-3-031-74643-7}
 	}
 
 
