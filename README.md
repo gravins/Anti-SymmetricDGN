@@ -3,7 +3,7 @@ This repository provides the official reference implementation of our papers
 
 - **[Anti-Symmetric DGN: a stable architecture for Deep Graph Networks](https://openreview.net/forum?id=J3Y7cgZOOS)** accepted at ICLR 2023
 - **[Non-Dissipative Propagation by Anti-Symmetric Deep Graph Networks](https://drive.google.com/file/d/1uPHhjwSa3g_hRvHwx6UnbMLgGN_cAqMu/view?usp=share_link)** accepted at the DLG-AAAI’23 workshop.
-- **[Non-Dissipative Propagation by Randomized Anti-Symmetric Deep Graph Networks](http://pages.di.unipi.it/gravina/#publications)** accepted at the Deep Learning meets Neuromorphic Hardware Workshop, ECML-PKDD 2023.
+- **[Non-Dissipative Propagation by Randomized Anti-Symmetric Deep Graph Networks](https://link.springer.com/chapter/10.1007/978-3-031-74643-7_3)** accepted at the Deep Learning meets Neuromorphic Hardware Workshop, ECML-PKDD 2023.
           
 
 Please consider citing us
@@ -19,10 +19,15 @@ Please consider citing us
  	@inproceedings{gravina2023randomized,
 		author = {Alessio Gravina and Claudio Gallicchio and Davide Bacciu},
 	 	title = {{Non-Dissipative Propagation by Randomized Anti-Symmetric Deep Graph Networks}},
-	 	booktitle = {},
-	 	year = {2023},
-		url = {}
+	 	booktitle = {Machine Learning and Principles and Practice of Knowledge Discovery in Databases},
+	 	year = {2025},
+	 	editor={Meo, Rosa and Silvestri, Fabrizio},
+	 	publisher={Springer Nature Switzerland},
+	 	address="Cham",
+	 	pages="25--36",
+	 	isbn="978-3-031-74643-7"
 	}
+
 
 ## Requirements
 _Note: we assume Miniconda/Anaconda is installed, otherwise see this [link](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html) for correct installation. The proper Python version is installed during the first step of the following procedure._
